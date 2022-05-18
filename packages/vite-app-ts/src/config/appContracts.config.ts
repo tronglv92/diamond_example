@@ -26,14 +26,23 @@ export const appContractsConfig = () => {
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your hadrdhat contracts here
       // --------------------------------------------------
+
+      DeFiFacet: createConnectorForHardhatContract(
+        'DeFiFacet',
+        hardhatContracts.DeFiFacet__factory,
+        hardhatContractsJson
+      ),
       YourContract: createConnectorForHardhatContract(
         'YourContract',
         hardhatContracts.YourContract__factory,
         hardhatContractsJson
       ),
-
-      YourNFT: createConnectorForHardhatContract('YourNFT', hardhatContracts.YourNFT__factory, hardhatContractsJson),
-
+      Diamond: createConnectorForHardhatContract('Diamond', hardhatContracts.Diamond__factory, hardhatContractsJson),
+      DiamondCutFacet: createConnectorForHardhatContract(
+        'DiamondCutFacet',
+        hardhatContracts.DiamondCutFacet__factory,
+        hardhatContractsJson
+      ),
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`
       // --------------------------------------------------

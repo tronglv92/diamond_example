@@ -5,7 +5,7 @@ import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, u
 import { useEthersAppContext } from 'eth-hooks/context';
 import { useDexEthPrice } from 'eth-hooks/dapps';
 import { asEthersAdaptor } from 'eth-hooks/functions';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useContext, useEffect, useState } from 'react';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { MainPageFooter, MainPageHeader, createPagesAndTabs, TContractPageList } from './components/main';
@@ -16,6 +16,9 @@ import { useCreateAntNotificationHolder } from '~~/components/main/hooks/useAntN
 import { useBurnerFallback } from '~~/components/main/hooks/useBurnerFallback';
 import { useScaffoldProviders as useScaffoldAppProviders } from '~~/components/main/hooks/useScaffoldAppProviders';
 import { BURNER_FALLBACK_ENABLED, MAINNET_PROVIDER } from '~~/config/app.config';
+import { ExampleUI } from './components/pages/example/ExampleUI';
+import { transactor } from 'eth-components/functions';
+import { EthComponentsSettingsContext } from 'eth-components/models';
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -70,21 +73,29 @@ export const MainPage: FC = () => {
   // These are the contracts!
   // -----------------------------
 
+  const settingsContext = useContext(EthComponentsSettingsContext);
+
+  const signer = ethersAppContext.signer;
+
+  const tx = transactor(settingsContext, signer, undefined, undefined, true);
+
   // init contracts
-  const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
-  const yourNFT = useAppContracts('YourNFT', ethersAppContext.chainId);
+  const defiFacet = useAppContracts('DeFiFacet', ethersAppContext.chainId);
+  const diamond = useAppContracts('Diamond', ethersAppContext.chainId);
+  const diamondCutFacet = useAppContracts('DiamondCutFacet', ethersAppContext.chainId);
   const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
+  const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
 
-  // keep track of a variable from the contract in the local React state:
-  const [purpose, update] = useContractReader(
-    yourContract,
-    yourContract?.purpose,
-    [],
-    yourContract?.filters.SetPurpose()
-  );
+  // // keep track of a variable from the contract in the local React state:
+  // const [purpose, update] = useContractReader(
+  //   yourContract,
+  //   yourContract?.purpose,
+  //   [],
+  //   yourContract?.filters.SetPurpose()
+  // );
 
-  // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
+  // // 📟 Listen for broadcast events
+  // const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
 
   // -----------------------------
   // .... 🎇 End of examples
@@ -108,35 +119,40 @@ export const MainPage: FC = () => {
     mainPage: {
       name: 'YourContract',
       content: (
-        <GenericContract
-          contractName="YourContract"
-          contract={yourContract}
-          mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-          blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
-        />
+        <>
+          <GenericContract
+            contractName="Diamond"
+            contract={diamond}
+            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          />
+          <GenericContract
+            contractName="YourContract"
+            contract={yourContract}
+            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
+            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          />
+        </>
       ),
     },
     pages: [
       {
-        name: 'YourNFT',
-        content: (
-          <GenericContract
-            contractName="YourNFT"
-            contract={yourNFT}
-            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}></GenericContract>
-        ),
-      },
-      {
-        name: 'Dai',
-        content: (
-          <GenericContract
-            contractName="Dai"
-            contract={mainnetDai}
-            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
-          />
-        ),
+        name: 'exampleui',
+        content:
+          yourContract && diamond && diamondCutFacet && tx && signer ? (
+            <ExampleUI
+              scaffoldAppProviders={scaffoldAppProviders}
+              tx={tx}
+              yourLocalBalance={yourCurrentBalance}
+              price={ethPrice}
+              yourContract={yourContract}
+              diamond={diamond}
+              diamondCutFacet={diamondCutFacet}
+              signer={signer}
+            />
+          ) : (
+            <div></div>
+          ),
       },
     ],
   };

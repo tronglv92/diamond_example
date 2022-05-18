@@ -1,8 +1,13 @@
 import { TNetworkInfo } from "eth-hooks/models";
 
 import { TNetworkNames } from "../models/TNetworkNames";
+import { config as envConfig } from "dotenv";
 
-const INFURA_ID = process.env.VITE_RPC_MAINNET_INFURA;
+// this loads the .env file into process.env
+envConfig({ path: "../vite-app-ts/.env" });
+
+const INFURA_ID = process.env.VITE_KEY_INFURA;
+console.log("INFURA_ID ", INFURA_ID);
 
 let hostname = "localhost";
 if (typeof window !== "undefined") {
@@ -46,7 +51,7 @@ export const NETWORKS: Readonly<Record<TNetworkNames, TNetworkInfo>> = {
     chainId: 3,
     faucet: "https://faucet.ropsten.be/",
     blockExplorer: "https://ropsten.etherscan.io/",
-    url: `https://ropsten.infura.io/v3/${INFURA_ID}`,
+    url: `https://ropsten.infura.io/v3/ea6306a5ab734f2fa0f4d909c300cdde`,
   },
   goerli: {
     name: "goerli",

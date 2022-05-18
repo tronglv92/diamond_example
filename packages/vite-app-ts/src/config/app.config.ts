@@ -94,7 +94,10 @@ export const MAINNET_PROVIDER = mainnetScaffoldEthProvider;
 // -------------------
 
 if (DEBUG) console.log('🏠 Connecting to provider:', NETWORKS.localhost.url);
-export const LOCAL_PROVIDER: TEthersProvider | undefined =
-  TARGET_NETWORK_INFO === NETWORKS.localhost && import.meta.env.DEV
-    ? new StaticJsonRpcProvider(NETWORKS.localhost.url)
-    : undefined;
+const test = 'https://ropsten.infura.io/v3/ea6306a5ab734f2fa0f4d909c300cdde';
+
+// export const LOCAL_PROVIDER: TEthersProvider | undefined =
+//   TARGET_NETWORK_INFO === NETWORKS.localhost && import.meta.env.DEV
+//     ? new StaticJsonRpcProvider(NETWORKS.localhost.url)
+//     : undefined;
+export const LOCAL_PROVIDER: TEthersProvider | undefined = new StaticJsonRpcProvider(test);
