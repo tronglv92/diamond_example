@@ -43,6 +43,11 @@ export const appContractsConfig = () => {
         hardhatContracts.DiamondCutFacet__factory,
         hardhatContractsJson
       ),
+      DiamondLoupeFacet: createConnectorForHardhatContract(
+        'DiamondLoupeFacet',
+        hardhatContracts.DiamondLoupeFacet__factory,
+        hardhatContractsJson
+      ),
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`
       // --------------------------------------------------

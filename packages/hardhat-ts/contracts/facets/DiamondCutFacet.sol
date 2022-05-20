@@ -1,12 +1,13 @@
 pragma solidity >=0.8.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 //SPDX-License-Identifier: MIT
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
 /******************************************************************************/
 
-import "./interfaces/IDiamondCut.sol";
-import "./libraries/LibDiamond.sol";
+import "../interfaces/IDiamondCut.sol";
+import "../libraries/LibDiamond.sol";
 
 contract DiamondCutFacet is IDiamondCut {
   // Standard diamondCut external function
@@ -21,14 +22,15 @@ contract DiamondCutFacet is IDiamondCut {
     address _init,
     bytes calldata _calldata
   ) external override {
+    LibDiamond.enforceIsContractOwner();
     LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
     uint256 originalSelectorCount = ds.selectorCount;
     uint256 selectorCount = originalSelectorCount;
     bytes32 selectorSlot;
-    // check if last selector slot is not full
-    if (selectorCount % 8 > 0) {
+    // Check if last selector slot is not full
+    if (selectorCount & 7 > 0) {
       // get last selectorSlot
-      selectorSlot = ds.selectorSlots[selectorCount / 8];
+      selectorSlot = ds.selectorSlots[selectorCount >> 3];
     }
     // loop through diamond cut
     for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
@@ -44,14 +46,14 @@ contract DiamondCutFacet is IDiamondCut {
       ds.selectorCount = uint16(selectorCount);
     }
     // If last selector slot is not full
-    if (selectorCount % 8 > 0) {
-      ds.selectorSlots[selectorCount / 8] = selectorSlot;
+    if (selectorCount & 7 > 0) {
+      ds.selectorSlots[selectorCount >> 3] = selectorSlot;
     }
     emit DiamondCut(_diamondCut, _init, _calldata);
     LibDiamond.initializeDiamondCut(_init, _calldata);
   }
 
-  function getContractOwner() public view returns (address) {
-    return LibDiamond.contractOwner();
-  }
+  // function getContractOwner() public view returns (address) {
+  //   return LibDiamond.contractOwner();
+  // }
 }

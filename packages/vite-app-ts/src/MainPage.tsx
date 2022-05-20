@@ -82,10 +82,12 @@ export const MainPage: FC = () => {
   // init contracts
   const defiFacet = useAppContracts('DeFiFacet', ethersAppContext.chainId);
   const diamond = useAppContracts('Diamond', ethersAppContext.chainId);
+
   const diamondCutFacet = useAppContracts('DiamondCutFacet', ethersAppContext.chainId);
+  const diamondLoupeFacet = useAppContracts('DiamondLoupeFacet', ethersAppContext.chainId);
   const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
   const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
-
+ 
   // // keep track of a variable from the contract in the local React state:
   // const [purpose, update] = useContractReader(
   //   yourContract,
@@ -139,7 +141,7 @@ export const MainPage: FC = () => {
       {
         name: 'exampleui',
         content:
-          yourContract && diamond && diamondCutFacet && tx && signer ? (
+          yourContract && diamond && diamondCutFacet && tx && signer && diamondLoupeFacet ? (
             <ExampleUI
               scaffoldAppProviders={scaffoldAppProviders}
               tx={tx}
@@ -149,6 +151,7 @@ export const MainPage: FC = () => {
               diamond={diamond}
               diamondCutFacet={diamondCutFacet}
               signer={signer}
+              diamondLoupeFacet={diamondLoupeFacet}
             />
           ) : (
             <div></div>

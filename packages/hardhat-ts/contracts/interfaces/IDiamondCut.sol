@@ -12,6 +12,7 @@ interface IDiamondCut {
     Replace,
     Remove
   }
+  // Add=0, Replace=1, Remove=2
   struct FacetCut {
     address facetAddress;
     FacetCutAction action;

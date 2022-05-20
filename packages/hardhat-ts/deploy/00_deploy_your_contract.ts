@@ -18,11 +18,9 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   function getSelectors(contract: Contract) {
     const signatures: string[] = [];
     Object.keys(contract.interface.functions).map((key) => {
-      console.log('key ', key);
       signatures.push(contract.interface.getSighash(key));
     });
 
-    console.log('signatures ', signatures);
     return signatures;
   }
 
@@ -38,26 +36,40 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
     from: deployer,
     log: true,
   });
-  const yourContractTest = await ethers.getContract('YourContract', deployer);
-  getSelectors(yourContractTest);
-  const diamondCutFacet = await deploy('DiamondCutFacet', {
+  // const yourContractTest = await ethers.getContract('YourContract', deployer);
+  // getSelectors(yourContractTest);
+  const DiamondCutFacet = await deploy('DiamondCutFacet', {
     from: deployer,
     log: true,
   });
-  const diamondCutFacetContract = await ethers.getContract('DiamondCutFacet', deployer);
-  getSelectors(diamondCutFacetContract);
-  const diamondCutParams = [
-    [diamondCutFacet.address, FacetCutAction.Add, ['0x1f931c1c']],
-    [yourContract.address, FacetCutAction.Add, ['0xeb68757f', '0x84560625']],
-  ];
-  console.log('diamondCutParams ', diamondCutParams);
-  await deploy('Diamond', {
+
+  const Diamond = await deploy('Diamond', {
     from: deployer,
-    args: [diamondCutParams],
+    args: [deployer, DiamondCutFacet.address],
     log: true,
   });
-  const diamondContract = await ethers.getContract('Diamond', deployer);
-  getSelectors(diamondContract);
+  const FacetNames = ['DiamondLoupeFacet', 'OwnershipFacet'];
+  const cut = [];
+  for (const FacetName of FacetNames) {
+    const Facet = await deploy(FacetName, {
+      from: deployer,
+      log: true,
+    });
+    const facet = await ethers.getContract(FacetName, deployer);
+
+    cut.push({
+      facetAddress: Facet.address,
+      action: FacetCutAction.Add,
+      functionSelectors: getSelectors(facet),
+    });
+  }
+  console.log('cut ', cut);
+  const diamondCut = await ethers.getContractAt('IDiamondCut', Diamond.address);
+  await diamondCut.diamondCut(cut, '0x0000000000000000000000000000000000000000', '0x');
+
+  const diamondLoupeFacet = await ethers.getContractAt('DiamondLoupeFacet', Diamond.address);
+  const address = await diamondLoupeFacet.facetAddresses();
+  console.log('address ', address);
   // const provider = waffle.provider;
   // const balanceInWei = await provider.getBalance(diamondCutFacet.address);
   // console.log('balanceInWei ', balanceInWei);
