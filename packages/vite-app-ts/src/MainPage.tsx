@@ -87,7 +87,8 @@ export const MainPage: FC = () => {
   const diamondLoupeFacet = useAppContracts('DiamondLoupeFacet', ethersAppContext.chainId);
   const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
   const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
- 
+
+  console.log('yourContract ', yourContract);
   // // keep track of a variable from the contract in the local React state:
   // const [purpose, update] = useContractReader(
   //   yourContract,

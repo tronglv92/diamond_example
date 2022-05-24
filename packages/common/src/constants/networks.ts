@@ -1,14 +1,11 @@
 import { TNetworkInfo } from "eth-hooks/models";
-
+// import path from "path";
 import { TNetworkNames } from "../models/TNetworkNames";
-import { config as envConfig } from "dotenv";
-
-// this loads the .env file into process.env
-envConfig({ path: "../vite-app-ts/.env" });
 
 const INFURA_ID = process.env.VITE_KEY_INFURA;
 console.log("INFURA_ID ", INFURA_ID);
-
+// const relativePath = path.resolve(__dirname, "../src");
+// console.log("relativePath ", relativePath);
 let hostname = "localhost";
 if (typeof window !== "undefined") {
   hostname = window?.location?.hostname ?? "localhost";

@@ -112,7 +112,7 @@ export const ExampleUI: FC<IExampleProps> = (props) => {
             onClick={async () => {
               try {
                 const purpose = await yourContractContract.getPurpose();
-                // setPurposeResult(purpose);
+                setPurposeResult(purpose);
                 console.log('purpose ', purpose);
               } catch (e) {
                 const err = e as TRawTxError;
